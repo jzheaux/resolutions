@@ -1,0 +1,63 @@
+<html>
+    <head>
+        <script
+                src="https://code.jquery.com/jquery-3.4.1.min.js"
+                integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+                crossorigin="anonymous"></script>
+        <script
+                src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+        <script type="application/javascript">
+            var resolutions = function(accessToken) {
+                return function() {
+                    $.ajax({
+                        url: "http://localhost:8080/resolutions",
+                        headers: {"Authorization": "Bearer " + accessToken}
+                    })
+                    .done(function( data ) {
+                        $("#resolutions").html(JSON.stringify(data, null, "\t"));
+                    });
+                }
+            };
+
+            var resolution = function(accessToken) {
+                return function() {
+                    $.ajax({
+                        url: "http://localhost:8080/resolution/328167d1-2da3-5f7a-86d7-96b4376af2c0",
+                        headers: {"Authorization": "Bearer " + accessToken}
+                    })
+                    .done(function( data ) {
+                        console.log("worked!");
+                    });
+                }
+            }
+
+            $(document).ready(function() {
+                $("#login").click(function() {
+                    $.post("http://localhost:9999/auth/realms/one/protocol/openid-connect/token",
+                        {
+                            grant_type : "password",
+                            username : $("#username").val(),
+                            password : $("#password").val(),
+                            client_id : "spa",
+                            scope : "resolution:read resolution:write"
+                        })
+                        .done(function( data ) {
+                            $("#username").val("");
+                            $("#password").val("");
+                            $("#show").unbind("click");
+                            $("#show").click(resolutions(data.access_token));
+                            $("#show").click(resolution(data.access_token));
+                        });
+                });
+            });
+        </script>
+    </head>
+    <p>
+        <input id="username" placeholder="Username"/>
+    </p>
+    <p>
+        <input id="password" type="password" placeholder="Password"/>
+    </p>
+    <p><button id="login">Get Token</button><button id="show">Resolutions</button></p>
+    <pre id="resolutions"></pre>
+</html>

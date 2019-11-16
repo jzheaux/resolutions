@@ -1,0 +1,8 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9999/auth/realms/one
+
+admin.user-id: 328167d1-2da3-5f7a-86d7-96b4376af2c0
