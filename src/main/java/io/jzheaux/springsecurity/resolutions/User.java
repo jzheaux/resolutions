@@ -1,9 +1,16 @@
 package io.jzheaux.springsecurity.resolutions;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
+
+import static javax.persistence.CascadeType.ALL;
 
 @Entity(name="users")
 public class User {
@@ -18,6 +25,9 @@ public class User {
 
 	@Column
 	Boolean enabled = true;
+
+	@OneToMany(cascade=ALL)
+	List<UserAuthority> authorities = new ArrayList<>();
 
 	User() {}
 
@@ -57,5 +67,21 @@ public class User {
 
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public List<UserAuthority> getAuthorities() {
+		return authorities;
+	}
+
+	public void setAuthorities(List<UserAuthority> authorities) {
+		this.authorities = authorities;
+	}
+
+	public Iterable<UserAuthority> authorities() {
+		return Collections.unmodifiableCollection(this.authorities);
+	}
+
+	public void addAuthority(String authority) {
+		this.authorities.add(new UserAuthority(this, authority));
 	}
 }
