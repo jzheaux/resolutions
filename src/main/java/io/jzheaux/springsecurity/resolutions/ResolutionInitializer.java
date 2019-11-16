@@ -1,16 +1,23 @@
 package io.jzheaux.springsecurity.resolutions;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @Component
 public class ResolutionInitializer implements SmartInitializingSingleton {
+	private final UserRepository users;
 	private final ResolutionRepository resolutions;
+	private final PasswordEncoder passwordEncoder;
 
-	public ResolutionInitializer(ResolutionRepository resolutions) {
+	public ResolutionInitializer(UserRepository users,
+								 ResolutionRepository resolutions,
+								 PasswordEncoder passwordEncoder) {
+		this.users = users;
 		this.resolutions = resolutions;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Override
@@ -25,5 +32,11 @@ public class ResolutionInitializer implements SmartInitializingSingleton {
 		this.resolutions.save(new Resolution("Run for President", carolId));
 		this.resolutions.save(new Resolution("Run a Marathon", carolId));
 		this.resolutions.save(new Resolution("Run an Errand", carolId));
+
+		String joshPassword = this.passwordEncoder.encode("josh");
+		String carolPassword = this.passwordEncoder.encode("carol");
+
+		this.users.save(new User(joshId, "josh", joshPassword));
+		this.users.save(new User(carolId, "carol", carolPassword));
 	}
 }
