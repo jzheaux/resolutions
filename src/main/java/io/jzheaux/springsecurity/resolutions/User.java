@@ -1,16 +1,16 @@
 package io.jzheaux.springsecurity.resolutions;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.EAGER;
 
 @Entity(name="users")
 public class User {
@@ -26,8 +26,8 @@ public class User {
 	@Column
 	Boolean enabled = true;
 
-	@OneToMany(cascade=ALL)
-	List<UserAuthority> authorities = new ArrayList<>();
+	@OneToMany(cascade=ALL, fetch=EAGER)
+	List<UserAuthority> userAuthorities = new ArrayList<>();
 
 	User() {}
 
@@ -35,6 +35,14 @@ public class User {
 		this.id = id;
 		this.username = username;
 		this.password = password;
+	}
+
+	public User(User user) {
+		this.id = user.id;
+		this.username = user.username;
+		this.password = user.password;
+		this.enabled = user.enabled;
+		this.userAuthorities = new ArrayList<>(user.userAuthorities);
 	}
 
 	public UUID getId() {
@@ -69,19 +77,15 @@ public class User {
 		this.enabled = enabled;
 	}
 
-	public List<UserAuthority> getAuthorities() {
-		return authorities;
+	public List<UserAuthority> getUserAuthorities() {
+		return userAuthorities;
 	}
 
-	public void setAuthorities(List<UserAuthority> authorities) {
-		this.authorities = authorities;
-	}
-
-	public Iterable<UserAuthority> authorities() {
-		return Collections.unmodifiableCollection(this.authorities);
+	public void setUserAuthorities(List<UserAuthority> userAuthorities) {
+		this.userAuthorities = userAuthorities;
 	}
 
 	public void addAuthority(String authority) {
-		this.authorities.add(new UserAuthority(this, authority));
+		this.userAuthorities.add(new UserAuthority(this, authority));
 	}
 }
