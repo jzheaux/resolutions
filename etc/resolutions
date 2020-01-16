@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set +x
+
+if [ -z $1 ]; then
+	http :8080/resolutions "Authorization:Bearer $TOKEN"
+else
+	http :8080/resolutions "Authorization:Bearer $TOKEN"
+fi
+
+set -x
