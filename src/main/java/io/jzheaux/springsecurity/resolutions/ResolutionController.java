@@ -1,5 +1,6 @@
 package io.jzheaux.springsecurity.resolutions;
 
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,7 @@ public class ResolutionController {
 	}
 
 	@GetMapping("/resolution/{id}")
+	@PostAuthorize("@owner.apply(returnObject, principal.claims['user_id'])")
 	public Optional<Resolution> read(@PathVariable("id") UUID id) {
 		return this.resolutions.findById(id);
 	}
@@ -41,6 +43,7 @@ public class ResolutionController {
 	}
 
 	@PutMapping(path="/resolution/{id}/revise")
+	@PostAuthorize("@owner.apply(returnObject, principal.claims['user_id'])")
 	@Transactional
 	public Optional<Resolution> revise(@PathVariable("id") UUID id, @RequestBody String text) {
 		this.resolutions.revise(id, text);
@@ -48,6 +51,7 @@ public class ResolutionController {
 	}
 
 	@PutMapping("/resolution/{id}/complete")
+	@PostAuthorize("@owner.apply(returnObject, principal.claims['user_id'])")
 	@Transactional
 	public Optional<Resolution> complete(@PathVariable("id") UUID id) {
 		this.resolutions.complete(id);
