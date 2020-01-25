@@ -41,7 +41,7 @@ public class ResolutionControllerTests {
 	public void resolutionsWhenHasUserIdAndScopeThenOk() throws Exception {
 		this.mvc.perform(get("/resolutions")
 				.with(opaqueToken()
-						.attribute("user_id", this.carolId.toString())
+						.attribute("user_id", this.carolId)
 						.scopes("resolution:read")
 				))
 				.andExpect(status().isOk());
