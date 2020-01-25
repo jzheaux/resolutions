@@ -87,6 +87,19 @@ class ResolutionsApplicationTests {
 				.andExpect(status().isForbidden());
 	}
 
+	@Test
+	public void resolutionsWhenNoAudienceThenUnauthorized() throws Exception {
+		String audience = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMjE5MTY4ZDItMWRhNC00ZjhhLTg1ZDgtOTViNDM3N2FmM2MxIiwic2NvcGUiOiJyZXNvbHV0aW9uOnJlYWQiLCJhdWQiOiJyZXNvbHV0aW9uIn0.";
+		String noAudience = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMjE5MTY4ZDItMWRhNC00ZjhhLTg1ZDgtOTViNDM3N2FmM2MxIiwic2NvcGUiOiJyZXNvbHV0aW9uOnJlYWQifQ.";
+
+		this.mvc.perform(get("/resolutions")
+				.header("Authorization", "Bearer " + audience))
+				.andExpect(status().isOk());
+		this.mvc.perform(get("/resolutions")
+				.header("Authorization", "Bearer " + noAudience))
+				.andExpect(status().isUnauthorized());
+	}
+
 	@Configuration
 	static class JwtDecoderConfig {
 		@Bean

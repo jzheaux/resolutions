@@ -10,7 +10,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.MappedJwtClaimSetConverter;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -21,6 +26,10 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiFunction;
+
+import static org.springframework.security.oauth2.core.OAuth2TokenValidatorResult.failure;
+import static org.springframework.security.oauth2.core.OAuth2TokenValidatorResult.success;
+import static org.springframework.security.oauth2.server.resource.BearerTokenErrorCodes.INVALID_TOKEN;
 
 @SpringBootApplication
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -67,9 +76,20 @@ public class ResolutionsApplication extends WebSecurityConfigurerAdapter {
 				(Collections.singletonMap("user_id", converter));
 	}
 
+	private OAuth2TokenValidator<Jwt> jwtValidator() {
+		OAuth2TokenValidator<Jwt> audience = jwt ->
+				Optional.ofNullable(jwt.getAudience())
+					.filter(aud -> aud.contains("resolution"))
+					.map(aud -> success())
+					.orElse(failure(new OAuth2Error(INVALID_TOKEN, "Bad audience", "url")));
+		OAuth2TokenValidator<Jwt> defaults = JwtValidators.createDefault();
+		return new DelegatingOAuth2TokenValidator<>(defaults, audience);
+	}
+
 	@Autowired
 	void jwtDecoder(JwtDecoder jwtDecoder) {
 		((NimbusJwtDecoder) jwtDecoder).setClaimSetConverter(claimSetConverter());
+		((NimbusJwtDecoder) jwtDecoder).setJwtValidator(jwtValidator());
 	}
 
 	public static void main(String[] args) {
