@@ -46,7 +46,7 @@ class ResolutionsApplicationTests {
 	public void resolutionsWhenReadScopeThenAuthorized() throws Exception {
 		this.mvc.perform(get("/resolutions")
 				.with(jwt().jwt(j -> j
-						.claim("user_id", this.carolId.toString())
+						.claim("user_id", this.carolId)
 						.claim("scope", "resolution:read")
 				)))
 				.andExpect(status().isOk());

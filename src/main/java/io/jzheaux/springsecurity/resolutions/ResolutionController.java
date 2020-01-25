@@ -27,7 +27,7 @@ public class ResolutionController {
 	@GetMapping("/resolutions")
 	@PreAuthorize("hasAuthority('SCOPE_resolution:read')")
 	public List<Resolution> read(@AuthenticationPrincipal Jwt jwt) {
-		UUID owner = UUID.fromString(jwt.getClaim("user_id"));
+		UUID owner = jwt.getClaim("user_id");
 		return this.resolutions.findByOwner(owner);
 	}
 
@@ -41,7 +41,7 @@ public class ResolutionController {
 	@PostMapping("/resolution")
 	@PreAuthorize("hasAuthority('SCOPE_resolution:write')")
 	public Resolution make(@RequestBody String text, @AuthenticationPrincipal Jwt jwt) {
-		UUID owner = UUID.fromString(jwt.getClaim("user_id"));
+		UUID owner = jwt.getClaim("user_id");
 		Resolution resolution = new Resolution(text, owner);
 		return this.resolutions.save(resolution);
 	}
