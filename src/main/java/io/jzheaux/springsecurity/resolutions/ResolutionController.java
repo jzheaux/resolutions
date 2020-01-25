@@ -1,5 +1,7 @@
 package io.jzheaux.springsecurity.resolutions;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,8 +24,8 @@ public class ResolutionController {
 	}
 
 	@GetMapping("/resolutions")
-	public List<Resolution> read() {
-		UUID owner = UUID.fromString("219168d2-1da4-4f8a-85d8-95b4377af3c1");
+	public List<Resolution> read(@CurrentUserId String userId) {
+		UUID owner = UUID.fromString(userId);
 		return this.resolutions.findByOwner(owner);
 	}
 
@@ -33,8 +35,8 @@ public class ResolutionController {
 	}
 
 	@PostMapping("/resolution")
-	public Resolution make(@RequestBody String text) {
-		UUID owner = UUID.fromString("219168d2-1da4-4f8a-85d8-95b4377af3c1");
+	public Resolution make(@RequestBody String text, @CurrentUserId String userId) {
+		UUID owner = UUID.fromString(userId);
 		Resolution resolution = new Resolution(text, owner);
 		return this.resolutions.save(resolution);
 	}
