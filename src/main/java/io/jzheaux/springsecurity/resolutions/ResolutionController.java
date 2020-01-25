@@ -33,7 +33,7 @@ public class ResolutionController {
 
 	@GetMapping("/resolution/{id}")
 	@PreAuthorize("hasAuthority('SCOPE_resolution:read')")
-	@PostAuthorize("@owner.apply(returnObject, principal.claims['user_id'])")
+	@PostAuthorize("hasRole('ADMIN') || @owner.apply(returnObject, principal.claims['user_id'])")
 	public Optional<Resolution> read(@PathVariable("id") UUID id) {
 		return this.resolutions.findById(id);
 	}
