@@ -18,7 +18,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.net.URI;
 import java.util.UUID;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -38,6 +40,24 @@ class ResolutionsApplicationTests {
 		String token = token("carol", "carol");
 		this.mvc.perform(get("/resolutions")
 				.header("Authorization", "Bearer " + token))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	public void shareWhenNoShareAuthorityThenForbidden() throws Exception {
+		String token = token("josh", "josh");
+		this.mvc.perform(post("/resolution/219168d2-1da4-4f8a-85d8-95b4377af3c1/share")
+				.header("Authorization", "Bearer " + token)
+				.with(csrf()))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	public void shareWhenHasAuthorityThenPasses() throws Exception {
+		String token = token("carol", "carol");
+		this.mvc.perform(post("/resolution/219168d2-1da4-4f8a-85d8-95b4377af3c1/share")
+				.header("Authorization", "Bearer " + token)
+				.with(csrf()))
 				.andExpect(status().isOk());
 	}
 

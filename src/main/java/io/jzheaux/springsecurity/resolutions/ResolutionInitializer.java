@@ -3,14 +3,17 @@ package io.jzheaux.springsecurity.resolutions;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 @Component
 public class ResolutionInitializer implements SmartInitializingSingleton {
 	private final ResolutionRepository resolutions;
+	private final UserRepository users;
 
-	public ResolutionInitializer(ResolutionRepository resolutions) {
+	public ResolutionInitializer(ResolutionRepository resolutions, UserRepository users) {
 		this.resolutions = resolutions;
+		this.users = users;
 	}
 
 	@Override
@@ -25,5 +28,8 @@ public class ResolutionInitializer implements SmartInitializingSingleton {
 		this.resolutions.save(new Resolution("Run for President", carolId));
 		this.resolutions.save(new Resolution("Run a Marathon", carolId));
 		this.resolutions.save(new Resolution("Run an Errand", carolId));
+
+		this.users.save(new User(joshId, "basic", Arrays.asList(carolId)));
+		this.users.save(new User(carolId, "premium", Arrays.asList(joshId)));
 	}
 }

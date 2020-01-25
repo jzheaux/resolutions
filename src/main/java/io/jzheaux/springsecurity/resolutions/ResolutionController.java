@@ -1,5 +1,6 @@
 package io.jzheaux.springsecurity.resolutions;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,5 +51,14 @@ public class ResolutionController {
 	public Optional<Resolution> complete(@PathVariable("id") UUID id) {
 		this.resolutions.complete(id);
 		return readOne(id);
+	}
+
+	@PostMapping("/resolution/{id}/share")
+	public void share(@PathVariable("id") UUID id, @AuthenticationPrincipal User user) {
+		readOne(id).ifPresent(resolution -> {
+			for (UUID friend : user.getFriends()) {
+				make(resolution.getText(), friend);
+			}
+		});
 	}
 }

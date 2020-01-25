@@ -15,17 +15,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http
 			.authorizeRequests(a -> a
 				.mvcMatchers("/resolutions").hasAuthority("SCOPE_resolution:read")
+				.mvcMatchers("/resolution/{id}/share").hasAuthority("resolution:share")
 				.anyRequest().authenticated())
 			.oauth2ResourceServer(o -> o.opaqueToken());
 	}
 
 	@Bean
-	public OpaqueTokenIntrospector tokenIntrospector(OAuth2ResourceServerProperties properties) {
+	public OpaqueTokenIntrospector tokenIntrospector(
+			OAuth2ResourceServerProperties properties, UserRepository users) {
 		String url = properties.getOpaquetoken().getIntrospectionUri();
 		String clientId = properties.getOpaquetoken().getClientId();
 		String clientSecret = properties.getOpaquetoken().getClientSecret();
 		OpaqueTokenIntrospector delegate = new NimbusOpaqueTokenIntrospector
 				(url, clientId, clientSecret);
-		return new ResolutionOpaqueTokenIntrospector(delegate);
+		return new ResolutionOpaqueTokenIntrospector(delegate, users);
 	}
 }
