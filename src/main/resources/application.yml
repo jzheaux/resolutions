@@ -1,1 +1,8 @@
-
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        opaque-token:
+          introspection-uri: http://localhost:9999/auth/realms/one/protocol/openid-connect/token/introspect
+          client-id: app
+          client-secret: bfbd9f62-02ce-4638-a370-80d45514bd0a
