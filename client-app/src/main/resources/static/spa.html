@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <script
+                src="https://code.jquery.com/jquery-3.4.1.min.js"
+                integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+                crossorigin="anonymous"></script>
+        <script
+                src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+        <script type="application/javascript">
+            var resolutions = function() {
+                $.get("/resolutions")
+                    .done(function( data ) {
+                        $("#resolutions").html(JSON.stringify(data, null, "\t"));
+                    });
+            };
+
+            $(document).ready(function() {
+                $("#show").click(resolutions);
+            });
+        </script>
+    </head>
+    <button id="show">Resolutions</button></p>
+    <pre id="resolutions"></pre>
+</html>
