@@ -14,6 +14,8 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.MappedJwtClaimSetConverter;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtBearerTokenAuthenticationConverter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -31,7 +33,8 @@ public class ResolutionsApplication extends WebSecurityConfigurerAdapter {
 				.anyRequest().authenticated())
 			.oauth2ResourceServer(o -> o
 				.jwt(j -> j
-					.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+					.jwtAuthenticationConverter(jwtAuthenticationConverter())))
+			.cors();
 	}
 
 	private Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter() {

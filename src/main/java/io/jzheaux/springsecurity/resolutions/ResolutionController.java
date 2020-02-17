@@ -4,6 +4,7 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +32,7 @@ public class ResolutionController {
 	}
 
 	@GetMapping("/resolution/{id}")
+	@CrossOrigin(maxAge = 0)
 	@PreAuthorize("hasAuthority('SCOPE_resolution:read')")
 	@PostAuthorize("hasRole('ADMIN') || @owner.apply(returnObject, principal.attributes['user_id'])")
 	public Optional<Resolution> read(@PathVariable("id") UUID id) {
