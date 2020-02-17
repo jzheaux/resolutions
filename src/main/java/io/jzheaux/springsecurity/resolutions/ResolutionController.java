@@ -13,22 +13,38 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 public class ResolutionController {
 	private final ResolutionRepository resolutions;
+	private final ProfileService profiles;
 
-	public ResolutionController(ResolutionRepository resolutions) {
+	public ResolutionController(ResolutionRepository resolutions, ProfileService profiles) {
 		this.resolutions = resolutions;
+		this.profiles = profiles;
 	}
 
 	@GetMapping("/resolutions")
 	@PreAuthorize("hasAuthority('SCOPE_resolution:read')")
-	public List<Resolution> read(@AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
-		return this.resolutions.findByOwner(principal.getAttribute("user_id"));
+	public List<Map<String, Object>> read(@AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+		return this.resolutions.findByOwner(principal.getAttribute("user_id"))
+				.stream().map(this::resolutionToMap)
+				.collect(Collectors.toList());
+	}
+
+	private Map<String, Object> resolutionToMap(Resolution resolution) {
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("id", resolution.getId());
+		map.put("owner", this.profiles.findById(resolution.getOwner()).getName());
+		map.put("completed", resolution.getCompleted());
+		map.put("text", resolution.getText());
+		return map;
 	}
 
 	@GetMapping("/resolution/{id}")
