@@ -18,6 +18,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http
 			.authorizeRequests(a -> a
+				.mvcMatchers("/tenant/**").hasAuthority("tenants:write")
 				.anyRequest().authenticated())
 			.oauth2ResourceServer(o -> o
 				.authenticationManagerResolver(this.authenticationManagerResolver));
