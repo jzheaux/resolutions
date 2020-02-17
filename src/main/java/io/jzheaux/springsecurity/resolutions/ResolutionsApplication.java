@@ -37,6 +37,20 @@ public class ResolutionsApplication extends WebSecurityConfigurerAdapter {
 			.cors();
 	}
 
+	@Bean
+	WebMvcConfigurer webMvcConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**")
+						.allowedOrigins("http://localhost:4000")
+						.allowedMethods()
+						.allowedHeaders("Authorization")
+						.maxAge(0);
+			}
+		};
+	}
+
 	private Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter() {
 		return new JwtBearerTokenAuthenticationConverter();
 	}

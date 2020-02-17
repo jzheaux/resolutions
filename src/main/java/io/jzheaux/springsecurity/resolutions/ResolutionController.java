@@ -32,7 +32,7 @@ public class ResolutionController {
 	}
 
 	@GetMapping("/resolution/{id}")
-	@CrossOrigin(maxAge = 0)
+	@CrossOrigin
 	@PreAuthorize("hasAuthority('SCOPE_resolution:read')")
 	@PostAuthorize("hasRole('ADMIN') || @owner.apply(returnObject, principal.attributes['user_id'])")
 	public Optional<Resolution> read(@PathVariable("id") UUID id) {
