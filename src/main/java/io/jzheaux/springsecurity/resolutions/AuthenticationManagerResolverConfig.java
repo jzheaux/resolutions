@@ -10,9 +10,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
-import org.springframework.security.oauth2.server.resource.authentication.JwtBearerTokenAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtIssuerAuthenticationManagerResolver;
 import org.springframework.security.oauth2.server.resource.authentication.OpaqueTokenAuthenticationProvider;
 import org.springframework.security.oauth2.server.resource.introspection.NimbusOpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
@@ -35,13 +33,13 @@ public class AuthenticationManagerResolverConfig {
 			authenticationManagers = new LinkedHashMap<>();
 
 	AuthenticationManagerResolverConfig() {
-		addTenant(ONE);
-		addTenant(TWO);
+		this.authenticationManagers.put(ONE, jwt(ONE));
+		this.authenticationManagers.put(TWO, opaqueToken(TWO));
 	}
 
 	@Bean
 	AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver() {
-		return new JwtIssuerAuthenticationManagerResolver
+		return new RequestHeaderAuthenticationManagerResolver
 				(this.authenticationManagers::get);
 	}
 
@@ -71,6 +69,16 @@ public class AuthenticationManagerResolverConfig {
 			return authorities;
 		});
 		provider.setJwtAuthenticationConverter(converter);
+		return provider::authenticate;
+	}
+
+	AuthenticationManager opaqueToken(String issuer) {
+		OpaqueTokenIntrospector introspector = new NimbusOpaqueTokenIntrospector(
+				issuer + "/protocol/openid-connect/token/introspect",
+				"app",
+				"bfbd9f62-02ce-4638-a370-80d45514bd0a"
+		);
+		OpaqueTokenAuthenticationProvider provider = new OpaqueTokenAuthenticationProvider(introspector);
 		return provider::authenticate;
 	}
 }
